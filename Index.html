@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="STRIVEX v3 — performance football, cricket and sportswear.">
+  <title>STRIVEX v3 — Move Different</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Back4App (Parse) SDK -->
+  <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+
+  <style>
+    :root {
+      --ink: #0c0d0d;
+      --lime: #c8ff2e;
+      --paper: #f2f1ed;
+      --muted: #72736e;
+      --line: #d9d8d2;
+      --card-bg: #ffffff;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --badge-pending: #eab308;
+      --badge-proc: #3b82f6;
+      --badge-done: #22c55e;
+      --badge-cancel: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: Inter, sans-serif; min-height: 100vh; }
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea, select { font: inherit; }
+    .wrap { width: min(1180px, 92%); margin: auto; }
+
+    /* Navigation Header */
+    header { height: 74px; position: sticky; top: 0; z-index: 30; background: #f2f1edeb; backdrop-filter: blur(15px); border-bottom: 1px solid var(--line); }
+    .nav { height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .brand { font-weight: 900; font-size: 25px; letter-spacing: -1.7px; cursor: pointer; }
+    .brand span { font-weight: 500; }
+    nav { display: flex; gap: 24px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; align-items: center; }
+    nav a:hover { opacity: .5; }
+    .actions { display: flex; gap: 10px; align-items: center; }
+    .actions button { border: 0; background: none; cursor: pointer; }
+    .actions > button:first-child { font-size: 22px; }
+    .bag { background: var(--ink) !important; color: #fff; border-radius: 30px; padding: 10px 16px; font-size: 12px; font-weight: 800; }
+    .bag b { background: var(--lime); color: #111; padding: 2px 7px; border-radius: 20px; margin-left: 5px; }
+    .admin-btn { background: #101111; color: var(--lime); padding: 8px 14px; border-radius: 4px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; border: 1px solid var(--lime); cursor: pointer; transition: 0.2s; }
+    .admin-btn:hover { background: var(--lime); color: #111; }
+    .hamb { display: none; font-size: 22px; }
+
+    /* Hero */
+    .hero { min-height: 620px; background: #101111; color: #fff; position: relative; overflow: hidden; display: flex; align-items: center; }
+    .hero-copy { position: relative; z-index: 3; }
+    .kicker { font-size: 10px; font-weight: 900; letter-spacing: 2px; color: #777; margin: 0; }
+    .hero .kicker { color: #a8a8a2; }
+    .hero h1 { font-size: clamp(60px, 11vw, 130px); line-height: .78; letter-spacing: -8px; margin: 25px 0; }
+    .hero h1 em { font-style: normal; color: var(--lime); }
+    .lead { max-width: 480px; color: #aaa; line-height: 1.65; font-size: 15px; }
+    .cta { display: flex; align-items: center; gap: 22px; margin-top: 28px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 15px 21px; border: 0; border-radius: 3px; font-weight: 900; font-size: 11px; letter-spacing: .7px; cursor: pointer; text-transform: uppercase; }
+    .lime { background: var(--lime); color: #111; }
+    .dark { background: #111; color: #fff; }
+    .hero-art { position: absolute; right: 5%; top: 0; width: 52%; height: 100%; overflow: hidden; background: radial-gradient(circle at 55% 45%, #363a36, #151616 42%, #101111 70%); }
+    .orb { position: absolute; width: 470px; height: 470px; border: 1px solid #ffffff2a; border-radius: 50%; top: 15%; left: 22%; }
+    .kit { position: absolute; background: linear-gradient(145deg, #d7ff45, #91b91c); color: #101111; font-weight: 900; display: flex; align-items: center; justify-content: center; box-shadow: 25px 30px 45px #0008; clip-path: polygon(23% 0, 38% 8%, 50% 3%, 62% 8%, 77% 0, 100% 16%, 85% 42%, 78% 100%, 22% 100%, 15% 42%, 0 16%); }
+    .k1 { width: 210px; height: 290px; right: 27%; top: 19%; font-size: 42px; transform: rotate(9deg); }
+    .k2 { width: 165px; height: 225px; right: 3%; bottom: 12%; background: #e9e8e3; transform: rotate(-10deg); font-size: 48px; }
+    .vertical { position: absolute; right: 5%; top: 12%; writing-mode: vertical-rl; font-size: 9px; letter-spacing: 3px; color: #888; }
+    .marquee { background: var(--lime); padding: 13px 0; overflow: hidden; white-space: nowrap; font-size: 11px; font-weight: 900; letter-spacing: 1px; }
+    .marquee div { animation: mar 22s linear infinite; }
+    @keyframes mar { to { transform: translateX(-40%); } }
+
+    /* Catalog Section */
+    .section { padding: 80px 0; }
+    .section-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
+    .section h2, .story h2 { font-size: 52px; line-height: .9; letter-spacing: -3px; margin: 12px 0 0; }
+    .chips { display: flex; gap: 7px; flex-wrap: wrap; }
+    .chip { border: 1px solid #ccc; background: transparent; padding: 9px 13px; border-radius: 30px; cursor: pointer; font-size: 11px; font-weight: 800; }
+    .chip.active { background: #111; color: #fff; border-color: #111; }
+    .search { border-bottom: 1px solid #bbb; padding: 11px 0; display: flex; gap: 10px; margin-bottom: 22px; }
+    .search input { border: 0; outline: 0; background: transparent; width: 100%; font-size: 14px; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .card { background: #fff; border: 1px solid #e1e0db; position: relative; transition: transform 0.2s; }
+    .card:hover { transform: translateY(-4px); }
+    .photo { aspect-ratio: 1/1.1; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #e7e6e1; position: relative; }
+    .photo img { width: 100%; height: 100%; object-fit: cover; }
+    .shirt { width: 56%; height: 67%; clip-path: polygon(23% 0, 39% 8%, 50% 4%, 61% 8%, 77% 0, 100% 16%, 84% 43%, 77% 100%, 23% 100%, 16% 43%, 0 16%); box-shadow: 18px 25px 25px #0002; display: flex; align-items: center; justify-content: center; font-size: 25px; font-weight: 900; }
+    .p-black { background: #141414; color: #c8ff2e; }
+    .p-white { background: #f8f7f2; color: #111; border: 1px solid #ccc; }
+    .p-blue { background: #2454e8; color: #fff; }
+    .p-green { background: #166944; color: #fff; }
+    .p-red { background: #b8272d; color: #fff; }
+    .p-orange { background: #e57b1e; color: #111; }
+    .tag { position: absolute; left: 10px; top: 10px; background: var(--lime); padding: 5px 7px; font-size: 9px; font-weight: 900; z-index: 2; }
+    .info { padding: 15px; }
+    .info h3 { font-size: 13px; margin: 0 0 7px; }
+    .info p { font-size: 11px; color: #777; margin: 0 0 13px; min-height: 28px; }
+    .row { display: flex; justify-content: space-between; align-items: center; }
+    .price { font-weight: 900; font-size: 13px; }
+    .add { border: 0; background: #111; color: #fff; padding: 8px 10px; border-radius: 3px; font-size: 10px; font-weight: 900; cursor: pointer; }
+
+    /* Footer & Floating WhatsApp Button */
+    footer { background: #0b0c0c; color: #fff; margin-top: 60px; }
+    .foot { padding: 55px 0; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 30px; }
+    .foot div { display: flex; flex-direction: column; gap: 10px; }
+    .foot .brand { color: #fff; }
+    .foot p, .foot a { color: #888; font-size: 12px; }
+    .foot b { font-size: 10px; color: #666; letter-spacing: 2px; margin-bottom: 5px; }
+    .copy { text-align: center; border-top: 1px solid #222; padding: 18px; color: #555; font-size: 10px; }
+    .wa-float { position: fixed; bottom: 25px; right: 25px; z-index: 99; background: #25D366; color: #fff; padding: 12px 18px; border-radius: 50px; display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 13px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: transform 0.2s; }
+    .wa-float:hover { transform: scale(1.05); }
+
+    /* Drawers & Modals */
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 80; backdrop-filter: blur(4px); }
+    .overlay.open { display: flex; justify-content: flex-end; align-items: center; }
+    .drawer { background: var(--paper); width: min(460px, 100%); height: 100%; padding: 25px; display: flex; flex-direction: column; }
+    .drawer-head { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding-bottom: 18px; }
+    .drawer-head h2 { margin: 0; font-size: 22px; }
+    .drawer-head button { border: 0; background: none; font-size: 28px; cursor: pointer; }
+    #cartItems { overflow-y: auto; flex: 1; }
+    .cart-row { display: grid; grid-template-columns: 65px 1fr auto; gap: 12px; padding: 16px 0; border-bottom: 1px solid #ddd; }
+    .mini { background: #e5e4df; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 4px; }
+    .mini .shirt { width: 48%; height: 62%; }
+    .mini img { width: 100%; height: 100%; object-fit: cover; }
+    .cart-row h4 { margin: 0 0 6px; font-size: 12px; }
+    .cart-row p { margin: 0; color: #777; font-size: 11px; }
+    .qty { margin-top: 8px; display: flex; gap: 7px; align-items: center; }
+    .qty button { border: 1px solid #ddd; background: #fff; cursor: pointer; width: 22px; height: 22px; font-weight: 700; }
+    .drawer-bottom { margin-top: auto; padding-top: 15px; border-top: 1px solid #ccc; }
+    .total { display: flex; justify-content: space-between; padding: 10px 0; font-size: 15px; font-weight: 800; }
+    .full { width: 100%; }
+    
+    .checkout, .admin-login-box { width: min(500px, 94%); max-height: 94vh; margin: auto; background: var(--paper); padding: 25px; overflow: auto; border-radius: 4px; }
+    .checkout form, .admin-login-box form { padding-top: 15px; }
+    .checkout label, .admin-login-box label { display: block; font-size: 10px; font-weight: 900; margin-bottom: 12px; text-transform: uppercase; }
+    .checkout input, .checkout textarea, .checkout select, .admin-login-box input { display: block; width: 100%; margin-top: 5px; border: 1px solid #ccc; background: #fff; padding: 11px; border-radius: 3px; outline: 0; font-size: 13px; }
+    
+    /* Admin Panel Dashboard */
+    .admin-modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 100; overflow-y: auto; padding: 20px 10px; }
+    .admin-modal.open { display: block; }
+    .admin-box { background: #fff; max-width: 1100px; margin: 20px auto; padding: 30px; border-radius: 8px; box-shadow: var(--shadow); position: relative; color: var(--ink); }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--paper); padding-bottom: 15px; margin-bottom: 25px; }
+    .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #eee; }
+    .admin-tab { padding: 10px 20px; border: 0; background: none; font-weight: 800; cursor: pointer; font-size: 13px; border-bottom: 3px solid transparent; }
+    .admin-tab.active { border-color: #111; color: #111; }
+    .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: var(--paper); padding: 20px; border-radius: 6px; }
+    .table-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
+    th { background: #f8f8f6; padding: 12px; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid #ddd; }
+    td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+    
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    .form-grid label { font-size: 11px; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 5px; }
+    .form-grid input, .form-grid select, .form-grid textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; background: #fff;}
+    .file-upload-wrap { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+    #p_img_preview { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; display: none; border: 1px solid #ccc; }
+
+    #toast { position: fixed; bottom: 22px; left: 50%; transform: translate(-50%, 20px); background: #111; color: #fff; padding: 13px 20px; font-size: 12px; font-weight: 700; border-radius: 30px; opacity: 0; transition: .25s; z-index: 120; pointer-events: none; }
+    #toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .empty { padding: 40px; text-align: center; color: #777; grid-column: 1/-1; }
+
+    @media(max-width: 850px) {
+      nav { display: none; position: absolute; top: 74px; left: 0; right: 0; background: var(--paper); padding: 20px; flex-direction: column; }
+      .menu-open nav { display: flex; }
+      .hamb { display: block; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav wrap">
+    <a class="brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">STRI<span>VEX</span></a>
+    <nav id="nav">
+      <a href="#shop">Shop</a>
+      <a href="#football">Football</a>
+      <a href="#cricket">Cricket</a>
+      <button class="admin-btn" onclick="checkAdminAccess()">⚙ ADMIN PANEL</button>
+    </nav>
+    <div class="actions">
+      <button onclick="focusSearch()">⌕</button>
+      <button class="bag" onclick="openCart()">Bag <b id="count">0</b></button>
+      <button class="hamb" onclick="document.body.classList.toggle('menu-open')">☰</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="hero-art"><div class="orb"></div><div class="kit k1">S</div><div class="kit k2">10</div><div class="vertical">STRIVEX / 2026</div></div>
+    <div class="hero-copy wrap">
+      <p class="kicker">STRIVEX / PERFORMANCE DEPARTMENT</p>
+      <h1>MOVE<br><em>DIFFERENT.</em></h1>
+      <p class="lead">Premium kits and sportswear engineered for performance, designed for identity.</p>
+      <div class="cta"><a class="btn lime" href="#shop">SHOP THE DROP</a></div>
+    </div>
+  </section>
+
+  <section id="shop" class="section wrap">
+    <div class="section-top">
+      <div><p class="kicker">01 / THE DROP</p><h2>Latest gear</h2></div>
+      <div class="chips">
+        <button class="chip active" data-cat="all" onclick="setCat('all')">All</button>
+        <button class="chip" data-cat="football" onclick="setCat('football')">Football</button>
+        <button class="chip" data-cat="cricket" onclick="setCat('cricket')">Cricket</button>
+        <button class="chip" data-cat="shirt" onclick="setCat('shirt')">Shirts</button>
+      </div>
+    </div>
+    <div class="search"><span>⌕</span><input id="search" placeholder="Search products..." oninput="renderProducts()"></div>
+    <div id="products" class="grid"><div class="empty">Loading database...</div></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div><a class="brand">STRI<span>VEX</span></a><p>MOVE DIFFERENT.</p></div>
+    <div><b>SHOP</b><a href="#shop">All products</a></div>
+    <div><b>SUPPORT</b><a href="https://wa.me/923329611218" target="_blank">WhatsApp Direct</a></div>
+  </div>
+  <div class="copy">© 2026 STRIVEX — Built to compete.</div>
+</footer>
+
+<a href="https://wa.me/923329611218?text=Hi%20STRIVEX%2C%20I%20have%20a%20question." target="_blank" class="wa-float">💬 WhatsApp (+92 3329611218)</a>
+
+<!-- Admin Login Overlay -->
+<div class="overlay" id="adminLoginOverlay" style="justify-content: center; align-items: center;">
+  <aside class="admin-login-box" onclick="event.stopPropagation()">
+    <div class="drawer-head"><h2>Admin Access</h2><button onclick="closeAdminLogin()">×</button></div>
+    <form onsubmit="handleAdminLogin(event)">
+      <label>Username <input id="admin_user" required placeholder="Enter username"></label>
+      <label>Password <input type="password" id="admin_pass" required placeholder="Enter password"></label>
+      <button type="submit" class="btn dark full" style="margin-top: 15px;">LOGIN TO DASHBOARD</button>
+    </form>
+  </aside>
+</div>
+
+<!-- Cart Drawer -->
+<div class="overlay" id="cartOverlay" onclick="closeCart(event)">
+  <aside class="drawer" onclick="event.stopPropagation()">
+    <div class="drawer-head"><h2>Your bag</h2><button onclick="closeCart()">×</button></div>
+    <div id="cartItems"></div>
+    <div class="drawer-bottom">
+      <div class="total"><span>Total</span><b id="total">Rs. 0</b></div>
+      <button class="btn dark full" onclick="checkout()">CHECKOUT — COD</button>
+    </div>
+  </aside>
+</div>
+
+<!-- Checkout Overlay -->
+<div class="overlay" id="checkoutOverlay" onclick="closeCheckout(event)">
+  <aside class="checkout" onclick="event.stopPropagation()">
+    <div class="drawer-head"><h2>Place order</h2><button onclick="closeCheckout()">×</button></div>
+    <form id="checkoutForm" onsubmit="placeOrder(event)">
+      <label>Full Name <input id="c_name" required></label>
+      <label>Phone Number <input id="c_phone" required></label>
+      <label>City <input id="c_city" required></label>
+      <label>Delivery Address <textarea id="c_address" required></textarea></label>
+      <label>Preferred Size <select id="c_size"><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select></label>
+      <div class="total"><span>Order Total</span><b id="checkoutTotal">Rs. 0</b></div>
+      <button type="submit" class="btn dark full">CONFIRM &amp; PLACE ORDER</button>
+    </form>
+  </aside>
+</div>
+
+<!-- Admin Dashboard Modal -->
+<div class="admin-modal" id="adminModal">
+  <div class="admin-box">
+    <div class="admin-header">
+      <div><h2 style="margin:0; font-size: 24px;">STRIVEX Admin Dashboard</h2><small style="color:#666;">Back4App Cloud Connected</small></div>
+      <button onclick="closeAdmin()" style="border:0; background:none; font-size:28px; cursor:pointer;">×</button>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdminTab('orders')">Orders</button>
+      <button class="admin-tab" onclick="switchAdminTab('products')">Product Catalog</button>
+      <button class="admin-tab" onclick="adminLogout()" style="margin-left: auto; color: red;">Logout</button>
+    </div>
+
+    <!-- Tab 1: Orders -->
+    <div id="tab-orders">
+      <div class="stat-cards">
+        <div class="stat-card"><small>Total Orders</small><h3 id="statTotalOrders">0</h3></div>
+        <div class="stat-card"><small>Pending Orders</small><h3 id="statPendingOrders" style="color:var(--badge-pending)">0</h3></div>
+        <div class="stat-card"><small>Total Revenue</small><h3 id="statTotalRevenue">Rs. 0</h3></div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>Order ID</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="ordersTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 2: Products -->
+    <div id="tab-products" style="display:none;">
+      <h3 style="margin-top:0;">Add / Edit Product</h3>
+      <form onsubmit="saveProduct(event)" style="margin-bottom: 30px; background: var(--paper); padding: 15px; border-radius: 6px;">
+        <input type="hidden" id="p_id">
+        <div class="form-grid">
+          <div><label>Product Name</label><input id="p_name" required placeholder="e.g. Strivex Speed Shirt"></div>
+          <div><label>Category</label>
+            <select id="p_cat"><option value="football">Football</option><option value="cricket">Cricket</option><option value="shirt">Shirts</option></select>
+          </div>
+          <div><label>Price (PKR)</label><input id="p_price" type="number" required></div>
+          <div><label>Fallback Color (if no image)</label>
+            <select id="p_color"><option value="black">Black</option><option value="white">White</option><option value="blue">Blue</option><option value="green">Green</option><option value="red">Red</option><option value="orange">Orange</option></select>
+          </div>
+          <div>
+            <label>Product Image (Optional)</label>
+            <div class="file-upload-wrap">
+              <input type="file" id="p_image_input" accept="image/*" onchange="previewImage(event)" style="padding: 6px;">
+              <img id="p_img_preview" src="" alt="preview">
+            </div>
+          </div>
+          <div><label>Description</label><input id="p_desc" required></div>
+          <div><label>Tag Badge</label><input id="p_tag" placeholder="e.g. NEW"></div>
+        </div>
+        <div style="margin-top: 15px; display: flex; gap: 10px;">
+          <button type="submit" class="btn lime">Save Product to Cloud</button>
+          <button type="button" class="btn dark" onclick="resetProductForm()">Clear Form</button>
+        </div>
+      </form>
+
+      <h3>Current Inventory</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead>
+          <tbody id="productsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ==========================================
+  // 🚀 BACK4APP SETUP (KEYS INJECTED)
+  // ==========================================
+  Parse.initialize("nxhZOBNDgiOPqBZ7Np11PM78mE7e0mAM1NI4xqIi", "WDQAcPOMCCLSTWH7FRBuldhoKesR8JYNkkJZOzmV");
+  Parse.serverURL = 'https://parseapi.back4app.com/';
+
+  // Local State
+  let products = [];
+  let orders = [];
+  let cart = JSON.parse(localStorage.getItem("strivex_v3_cart")) || [];
+  let activeCat = "all";
+
+  const TARGET_EMAIL = "smariqbl25@gmail.com";
+  const TARGET_WHATSAPP = "923329611218";
+  const money = n => "Rs. " + Number(n).toLocaleString("en-PK");
+
+  // ==========================================
+  // FETCH & RENDER CLOUD DATA
+  // ==========================================
+  async function fetchProducts() {
+    const Product = Parse.Object.extend("Product");
+    const query = new Parse.Query(Product);
+    try {
+      const results = await query.find();
+      products = results.map(p => ({
+        id: p.id, // Back4app Object ID string
+        name: p.get("name"), cat: p.get("cat"), price: p.get("price"),
+        color: p.get("color"), desc: p.get("desc"), tag: p.get("tag"),
+        image: p.get("image") ? p.get("image").url() : ""
+      }));
+      renderProducts();
+      if(sessionStorage.getItem("strivex_admin_auth") === "true") renderAdminProducts();
+      drawCart(); // refresh cart data
+    } catch (e) {
+      console.error("Error fetching products:", e);
+      document.getElementById("products").innerHTML = `<div class="empty">No products available. Add some in the Admin Panel!</div>`;
+    }
+  }
+
+  function renderProducts() {
+    let q = (document.getElementById("search").value || "").toLowerCase();
+    let filtered = products.filter(p => (activeCat === "all" || p.cat === activeCat) && (p.name + " " + p.desc).toLowerCase().includes(q));
+    let container = document.getElementById("products");
+    
+    if(!filtered.length) { container.innerHTML = `<div class="empty">No products found.</div>`; return; }
+
+    container.innerHTML = filtered.map(p => `
+      <article class="card">
+        <div class="photo">
+          ${p.tag ? `<span class="tag">${p.tag}</span>` : ""}
+          ${p.image ? `<img src="${p.image}">` : `<div class="shirt p-${p.color}">${p.cat === 'cricket' ? '11' : 'S'}</div>`}
+        </div>
+        <div class="info">
+          <h3>${p.name}</h3><p>${p.desc}</p>
+          <div class="row"><span class="price">${money(p.price)}</span><button class="add" onclick="addToCart('${p.id}')">ADD +</button></div>
+        </div>
+      </article>
+    `).join("");
+  }
+
+  function setCat(c) { activeCat = c; document.querySelectorAll(".chip").forEach(b => b.classList.toggle("active", b.dataset.cat === c)); renderProducts(); }
+  function focusSearch() { document.getElementById("search").focus(); document.getElementById("shop").scrollIntoView({ behavior: "smooth" }); }
+
+  // ==========================================
+  // CART LOGIC (Remains LocalStorage)
+  // ==========================================
+  function saveCart() { localStorage.setItem("strivex_v3_cart", JSON.stringify(cart)); updateCartBadge(); drawCart(); }
+  function addToCart(id) { let item = cart.find(i => i.id === id); item ? item.qty++ : cart.push({ id, qty: 1 }); saveCart(); toast("Added to bag"); }
+  function updateCartBadge() { document.getElementById("count").textContent = cart.reduce((s, x) => s + x.qty, 0); }
+  function cartTotal() { return cart.reduce((s, i) => { let p = products.find(x => x.id === i.id); return s + (p ? p.price * i.qty : 0); }, 0); }
+
+  function drawCart() {
+    let el = document.getElementById("cartItems");
+    if (!cart.length) { el.innerHTML = '<div class="empty">Your bag is empty.</div>'; document.getElementById("total").textContent = "Rs. 0"; return; }
+    el.innerHTML = cart.map(i => {
+      let p = products.find(x => x.id === i.id); if (!p) return "";
+      let thumb = p.image ? `<img src="${p.image}">` : `<div class="shirt p-${p.color}">${p.cat === 'cricket' ? '11' : 'S'}</div>`;
+      return `<div class="cart-row"><div class="mini">${thumb}</div>
+        <div><h4>${p.name}</h4><p>${money(p.price)}</p>
+        <div class="qty"><button onclick="updateQty('${p.id}', -1)">−</button><span>${i.qty}</span><button onclick="updateQty('${p.id}', 1)">+</button></div>
+        </div><b>${money(p.price * i.qty)}</b></div>`;
+    }).join("");
+    document.getElementById("total").textContent = money(cartTotal());
+  }
+  function updateQty(id, delta) { let x = cart.find(i => i.id === id); if (x) { x.qty += delta; if (x.qty <= 0) cart = cart.filter(i => i.id !== id); saveCart(); } }
+  function openCart() { drawCart(); document.getElementById("cartOverlay").classList.add("open"); }
+  function closeCart(e) { if (!e || e.target === document.getElementById("cartOverlay")) document.getElementById("cartOverlay").classList.remove("open"); }
+
+  // ==========================================
+  // CHECKOUT & SAVE ORDER TO CLOUD
+  // ==========================================
+  function checkout() {
+    if (!cart.length) { toast("Your bag is empty"); return; }
+    document.getElementById("checkoutTotal").textContent = money(cartTotal());
+    closeCart(); document.getElementById("checkoutOverlay").classList.add("open");
+  }
+  function closeCheckout(e) { if (!e || e.target === document.getElementById("checkoutOverlay")) document.getElementById("checkoutOverlay").classList.remove("open"); }
+
+  async function placeOrder(e) {
+    e.preventDefault();
+    let itemsDetail = cart.map(i => { let p = products.find(x => x.id === i.id); return `${i.qty}x ${p ? p.name : 'Item'}`; }).join(", ");
+    let orderIdStr = "STX-" + Math.floor(100000 + Math.random() * 900000);
+    let totalAmt = cartTotal();
+
+    // 1. Save to Back4App DB
+    const Order = Parse.Object.extend("Order");
+    const parseOrder = new Order();
+    parseOrder.set("orderId", orderIdStr);
+    parseOrder.set("date", new Date().toLocaleString("en-PK"));
+    parseOrder.set("name", document.getElementById("c_name").value);
+    parseOrder.set("phone", document.getElementById("c_phone").value);
+    parseOrder.set("city", document.getElementById("c_city").value);
+    parseOrder.set("address", document.getElementById("c_address").value);
+    parseOrder.set("size", document.getElementById("c_size").value);
+    parseOrder.set("items", itemsDetail);
+    parseOrder.set("total", totalAmt);
+    parseOrder.set("status", "Pending");
+
+    try {
+      toast("Submitting order to server...");
+      await parseOrder.save();
+
+      // 2. Dispatch Contact Routing
+      let waText = `*NEW ORDER #${orderIdStr}*\nName: ${parseOrder.get("name")}\nPhone: ${parseOrder.get("phone")}\nAddress: ${parseOrder.get("address")}\nItems: ${itemsDetail}\nTotal: ${money(totalAmt)}`;
+      let mailSub = encodeURIComponent(`STRIVEX Order ${orderIdStr} - ${parseOrder.get("name")}`);
+      let mailBody = encodeURIComponent(waText.replace(/\*/g, ''));
+      
+      window.open(`mailto:${TARGET_EMAIL}?subject=${mailSub}&body=${mailBody}`, "_self");
+      setTimeout(() => { window.open(`https://wa.me/${TARGET_WHATSAPP}?text=${encodeURIComponent(waText)}`, "_blank"); }, 600);
+
+      // 3. Clear cart
+      cart = []; saveCart(); closeCheckout(); document.getElementById("checkoutForm").reset(); 
+      toast("Order placed successfully!");
+      if(sessionStorage.getItem("strivex_admin_auth") === "true") fetchOrders();
+      
+    } catch (error) {
+      toast("Error submitting order: " + error.message);
+    }
+  }
+
+  // ==========================================
+  // ADMIN AUTH & DASHBOARD
+  // ==========================================
+  function checkAdminAccess() {
+    if(sessionStorage.getItem("strivex_admin_auth") === "true") { openAdminDashboard(); } 
+    else { document.getElementById("adminLoginOverlay").style.display = "flex"; }
+  }
+  function closeAdminLogin() { document.getElementById("adminLoginOverlay").style.display = "none"; document.getElementById("admin_pass").value = ""; }
+  
+  function handleAdminLogin(e) {
+    e.preventDefault();
+    let user = document.getElementById("admin_user").value;
+    let pass = document.getElementById("admin_pass").value;
+    if(user === "Samarxd" && pass === "Samar@124") {
+      sessionStorage.setItem("strivex_admin_auth", "true");
+      closeAdminLogin(); openAdminDashboard(); toast("Welcome back, Samarxd");
+    } else { toast("Invalid Credentials"); }
+  }
+  function adminLogout() { sessionStorage.removeItem("strivex_admin_auth"); closeAdmin(); toast("Logged out"); }
+
+  function openAdminDashboard() { 
+    fetchOrders(); 
+    if(!products.length) fetchProducts(); else renderAdminProducts();
+    document.getElementById("adminModal").classList.add("open"); 
+  }
+  function closeAdmin() { document.getElementById("adminModal").classList.remove("open"); }
+  function switchAdminTab(tab) {
+    document.querySelectorAll(".admin-tab").forEach(t => t.classList.remove("active"));
+    if(tab === 'orders') { document.querySelectorAll(".admin-tab")[0].classList.add("active"); document.getElementById("tab-orders").style.display = "block"; document.getElementById("tab-products").style.display = "none"; } 
+    else { document.querySelectorAll(".admin-tab")[1].classList.add("active"); document.getElementById("tab-orders").style.display = "none"; document.getElementById("tab-products").style.display = "block"; }
+  }
+
+  // ==========================================
+  // ADMIN CLOUD ORDERS
+  // ==========================================
+  async function fetchOrders() {
+    const Order = Parse.Object.extend("Order");
+    const query = new Parse.Query(Order);
+    query.descending("createdAt");
+    try {
+      const results = await query.find();
+      orders = results.map(o => ({
+        id: o.id, orderId: o.get("orderId"), date: o.get("date"), name: o.get("name"),
+        phone: o.get("phone"), city: o.get("city"), address: o.get("address"),
+        size: o.get("size"), items: o.get("items"), total: o.get("total"), status: o.get("status")
+      }));
+      renderAdminOrders();
+    } catch (e) { console.error("Error fetching orders:", e); }
+  }
+
+  function renderAdminOrders() {
+    let pending = orders.filter(o => o.status === "Pending").length;
+    let rev = orders.reduce((sum, o) => sum + (o.status !== "Cancelled" ? o.total : 0), 0);
+    document.getElementById("statTotalOrders").textContent = orders.length; 
+    document.getElementById("statPendingOrders").textContent = pending; 
+    document.getElementById("statTotalRevenue").textContent = money(rev);
+    
+    let tbody = document.getElementById("ordersTableBody");
+    if (!orders.length) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No orders yet.</td></tr>`; return; }
+    tbody.innerHTML = orders.map(o => `<tr><td><b>${o.orderId}</b></td><td><small>${o.date}</small></td><td>${o.name}</td><td><small>${o.items} (${o.size})</small></td><td><b>${money(o.total)}</b></td>
+      <td><select onchange="changeOrderStatus('${o.id}', this.value)"><option ${o.status==='Pending'?'selected':''}>Pending</option><option ${o.status==='Processing'?'selected':''}>Processing</option><option ${o.status==='Delivered'?'selected':''}>Delivered</option><option ${o.status==='Cancelled'?'selected':''}>Cancelled</option></select></td>
+      <td><button style="border:0; background:none; color:red; cursor:pointer;" onclick="deleteOrder('${o.id}')">🗑 Delete</button></td></tr>`).join("");
+  }
+
+  async function changeOrderStatus(objId, val) { 
+    toast("Updating status...");
+    const Order = Parse.Object.extend("Order");
+    const obj = new Order(); obj.id = objId;
+    obj.set("status", val);
+    try { await obj.save(); toast("Status updated"); fetchOrders(); } 
+    catch(e) { toast("Error: " + e.message); }
+  }
+  
+  async function deleteOrder(objId) { 
+    if (confirm("Delete this order completely from the database?")) { 
+      toast("Deleting order...");
+      const Order = Parse.Object.extend("Order");
+      const obj = new Order(); obj.id = objId;
+      try { await obj.destroy(); toast("Order deleted"); fetchOrders(); } 
+      catch(e) { toast("Error: " + e.message); }
+    } 
+  }
+
+  // ==========================================
+  // ADMIN CLOUD PRODUCTS & IMAGE UPLOAD
+  // ==========================================
+  function previewImage(e) {
+    let file = e.target.files[0];
+    if(file) {
+      let reader = new FileReader();
+      reader.onload = function(evt) { document.getElementById("p_img_preview").src = evt.target.result; document.getElementById("p_img_preview").style.display = "block"; };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function renderAdminProducts() {
+    let tbody = document.getElementById("productsTableBody");
+    tbody.innerHTML = products.map(p => `<tr>
+      <td>${p.image ? `<img src="${p.image}" style="width:35px;height:35px;object-fit:cover;border-radius:4px;">` : `<div style="width:35px;height:35px;background:#eee;border-radius:4px;"></div>`}</td>
+      <td><b>${p.name}</b></td><td>${p.cat.toUpperCase()}</td><td>${money(p.price)}</td>
+      <td><button class="btn lime" style="padding:4px 8px; font-size:10px;" onclick="editProduct('${p.id}')">Edit</button> <button class="btn dark" style="padding:4px 8px; font-size:10px;" onclick="deleteProduct('${p.id}')">Delete</button></td></tr>`).join("");
+  }
+
+  async function saveProduct(e) {
+    e.preventDefault();
+    let id = document.getElementById("p_id").value;
+    let fileInput = document.getElementById("p_image_input");
+
+    const Product = Parse.Object.extend("Product");
+    let parseProduct = new Product();
+    if (id) parseProduct.id = id;
+
+    parseProduct.set("name", document.getElementById("p_name").value);
+    parseProduct.set("cat", document.getElementById("p_cat").value);
+    parseProduct.set("price", Number(document.getElementById("p_price").value));
+    parseProduct.set("color", document.getElementById("p_color").value);
+    parseProduct.set("tag", document.getElementById("p_tag").value);
+    parseProduct.set("desc", document.getElementById("p_desc").value);
+
+    // Natively handle File upload to Back4App Servers
+    if (fileInput.files.length > 0) {
+      let file = fileInput.files[0];
+      let parseFile = new Parse.File(file.name, file);
+      parseProduct.set("image", parseFile);
+    }
+
+    try {
+      toast("Saving to cloud... (This may take a moment for images)");
+      await parseProduct.save();
+      toast("Product saved successfully!");
+      resetProductForm();
+      await fetchProducts();
+    } catch(err) {
+      toast("Error saving product: " + err.message);
+    }
+  }
+
+  function editProduct(id) {
+    let p = products.find(x => x.id === id); if (!p) return;
+    document.getElementById("p_id").value = p.id; document.getElementById("p_name").value = p.name;
+    document.getElementById("p_cat").value = p.cat; document.getElementById("p_price").value = p.price;
+    document.getElementById("p_color").value = p.color; document.getElementById("p_desc").value = p.desc;
+    document.getElementById("p_tag").value = p.tag || "";
+    
+    let prev = document.getElementById("p_img_preview");
+    if(p.image) { prev.src = p.image; prev.style.display = "block"; } else { prev.style.display = "none"; }
+    document.getElementById("tab-products").scrollIntoView({ behavior: 'smooth' });
+  }
+
+  async function deleteProduct(id) { 
+    if (confirm("Delete this product completely from the database?")) { 
+      toast("Deleting product...");
+      const Product = Parse.Object.extend("Product");
+      const obj = new Product(); obj.id = id;
+      try { await obj.destroy(); toast("Product deleted"); fetchProducts(); } 
+      catch(e) { toast("Error: " + e.message); }
+    } 
+  }
+  
+  function resetProductForm() { 
+    document.getElementById("p_id").value = ""; 
+    document.querySelector("#tab-products form").reset();
+    document.getElementById("p_img_preview").style.display = "none";
+  }
+
+  function toast(msg) { let t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2500); }
+
+  // Init
+  updateCartBadge();
+  fetchProducts(); // Load directly from Back4App on startup
+
+</script>
+</body>
+</html>
